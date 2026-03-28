@@ -7,7 +7,7 @@ Silk ships as a single component with styles, sensible defaults, and a curated f
 ## Install
 
 ```bash
-npm install silk-edit lexical @lexical/react @lexical/rich-text @lexical/code \
+npm install silk-compose lexical @lexical/react @lexical/rich-text @lexical/code \
   @lexical/code-shiki @lexical/history @lexical/link @lexical/list \
   @lexical/markdown @lexical/selection @lexical/dragon
 ```
@@ -15,8 +15,8 @@ npm install silk-edit lexical @lexical/react @lexical/rich-text @lexical/code \
 ## Quick start
 
 ```tsx
-import { SilkEditor } from "silk-edit";
-import "silk-edit/styles";
+import { SilkEditor } from "silk-compose";
+import "silk-compose/styles";
 
 function App() {
   return <SilkEditor />;
@@ -54,7 +54,7 @@ The JSON string is a complete snapshot of the document — text, formatting, ima
 | `onChange` | `(json: string) => void` | — | Called on every content change with the serialized editor state. |
 | `initialEditorState` | `string` | — | JSON string from a previous `onChange` to restore content. |
 | `features` | `SilkFeatures` | All enabled | Toggle feature groups on/off. |
-| `namespace` | `string` | `"silk-editor"` | Lexical editor namespace. |
+| `namespace` | `string` | `"silk-composeor"` | Lexical editor namespace. |
 | `className` | `string` | — | Additional CSS class on the container. |
 | `theme` | `EditorThemeClasses` | — | Lexical theme overrides (deep-merged with defaults). |
 | `onError` | `(error: Error) => void` | `console.error` | Error handler for Lexical. |
@@ -95,7 +95,7 @@ These are not feature-gated and are always available:
 Silk ships a single CSS file with all styles. Import it once:
 
 ```tsx
-import "silk-edit/styles";
+import "silk-compose/styles";
 ```
 
 All CSS classes are prefixed with `silk-` to avoid collisions. The default theme uses a warm, neutral palette with Inter for body text, Space Grotesk for headings, and SF Mono for code and technical labels.
@@ -106,12 +106,12 @@ To customize the Lexical theme (class names applied to nodes), pass the `theme` 
 
 ```tsx
 // Component
-import { SilkEditor } from "silk-edit";
-import type { SilkEditorProps, SilkFeatures } from "silk-edit";
+import { SilkEditor } from "silk-compose";
+import type { SilkEditorProps, SilkFeatures } from "silk-compose";
 
 // Nodes (for advanced Lexical integrations)
-import { NoteNode, $createNoteNode, $isNoteNode } from "silk-edit";
-import { ImageNode, $createImageNode, $isImageNode } from "silk-edit";
+import { NoteNode, $createNoteNode, $isNoteNode } from "silk-compose";
+import { ImageNode, $createImageNode, $isImageNode } from "silk-compose";
 ```
 
 ## Requirements
