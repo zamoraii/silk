@@ -7,10 +7,10 @@ Silk ships as a single component with styles, sensible defaults, and a curated f
 ## Install
 
 ```bash
-npm install silk-compose lexical @lexical/react @lexical/rich-text @lexical/code \
-  @lexical/code-shiki @lexical/history @lexical/link @lexical/list \
-  @lexical/markdown @lexical/selection @lexical/dragon
+npm install silk-compose
 ```
+
+All Lexical dependencies are included automatically.
 
 ## Quick start
 
@@ -27,19 +27,30 @@ That's it. You get a fully functional editor with formatting, code blocks, lists
 
 ## Saving and restoring content
 
-Silk uses Lexical's native serialization. Pass an `onChange` callback to receive the editor state as a JSON string on every content change, and `initialEditorState` to restore it.
+Silk uses Lexical's native serialization. Pass a `ref` to get a handle with a `getState()` method that returns the editor content as a JSON string. Pass that string back as `initialEditorState` to restore it.
 
 ```tsx
+import { useRef } from "react";
+import { SilkEditor } from "silk-compose";
+import type { SilkEditorHandle } from "silk-compose";
+import "silk-compose/styles";
+
 function App() {
-  const [saved, setSaved] = useState<string | undefined>(
-    () => localStorage.getItem("doc") ?? undefined,
-  );
+  const editorRef = useRef<SilkEditorHandle>(null);
+
+  const handleSave = () => {
+    const json = editorRef.current?.getState();
+    if (json) saveToDatabase(json);
+  };
 
   return (
-    <SilkEditor
-      initialEditorState={saved}
-      onChange={(json) => localStorage.setItem("doc", json)}
-    />
+    <>
+      <SilkEditor
+        ref={editorRef}
+        initialEditorState={loadFromDatabase()}
+      />
+      <button onClick={handleSave}>Save</button>
+    </>
   );
 }
 ```
@@ -50,11 +61,11 @@ The JSON string is a complete snapshot of the document — text, formatting, ima
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
+| `ref` | `Ref<SilkEditorHandle>` | — | Exposes `getState()` to read the serialized editor content on demand. |
 | `editable` | `boolean` | `true` | Toggle between edit and read-only mode at runtime. |
-| `onChange` | `(json: string) => void` | — | Called on every content change with the serialized editor state. |
-| `initialEditorState` | `string` | — | JSON string from a previous `onChange` to restore content. |
+| `initialEditorState` | `string` | — | JSON string from a previous `getState()` call to restore content. |
 | `features` | `SilkFeatures` | All enabled | Toggle feature groups on/off. |
-| `namespace` | `string` | `"silk-composeor"` | Lexical editor namespace. |
+| `namespace` | `string` | `"silk-editor"` | Lexical editor namespace. |
 | `className` | `string` | — | Additional CSS class on the container. |
 | `theme` | `EditorThemeClasses` | — | Lexical theme overrides (deep-merged with defaults). |
 | `onError` | `(error: Error) => void` | `console.error` | Error handler for Lexical. |
@@ -87,7 +98,7 @@ These are not feature-gated and are always available:
 - **Horizontal rules** — section dividers
 - **Slash commands** — type `/` to insert headings, code blocks, lists, notes, links, dividers
 - **Markdown shortcuts** — `*`/`-` for bullet lists, `1.` for numbered lists, common text format triggers
-- **Font controls** — size (10–36), family (Inter, SF Mono, Space Grotesk), and a curated color palette
+- **Font controls** — size (10-36), family (Inter, SF Mono, Space Grotesk), and a curated color palette
 - **Read-only mode** — pass `editable={false}` to disable editing; toolbars hide, links become directly clickable
 
 ## Styling
@@ -107,7 +118,7 @@ To customize the Lexical theme (class names applied to nodes), pass the `theme` 
 ```tsx
 // Component
 import { SilkEditor } from "silk-compose";
-import type { SilkEditorProps, SilkFeatures } from "silk-compose";
+import type { SilkEditorProps, SilkEditorHandle, SilkFeatures } from "silk-compose";
 
 // Nodes (for advanced Lexical integrations)
 import { NoteNode, $createNoteNode, $isNoteNode } from "silk-compose";
@@ -117,7 +128,6 @@ import { ImageNode, $createImageNode, $isImageNode } from "silk-compose";
 ## Requirements
 
 - React 18 or 19
-- Lexical 0.41+
 
 ## License
 

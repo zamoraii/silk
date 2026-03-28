@@ -8,6 +8,11 @@ export interface SilkFeatures {
   lists?: boolean;
 }
 
+export interface SilkEditorHandle {
+  /** Returns the current editor state as a JSON string. */
+  getState: () => string;
+}
+
 export interface SilkEditorProps {
   features?: SilkFeatures;
   namespace?: string;
@@ -15,8 +20,6 @@ export interface SilkEditorProps {
   theme?: EditorThemeClasses;
   editable?: boolean;
   onError?: (error: Error) => void;
-  /** Called on every content change with the serialized editor state as a JSON string. */
-  onChange?: (serializedEditorState: string) => void;
-  /** JSON string from a previous `onChange` call to restore editor content. */
+  /** JSON string from a previous `getState()` call to restore editor content. */
   initialEditorState?: string;
 }

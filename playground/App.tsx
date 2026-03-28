@@ -1,11 +1,12 @@
 import { useState, useCallback, useRef } from "react";
 import { SilkEditor } from "../src";
+import type { SilkEditorHandle } from "../src";
 
 const STORAGE_KEY = "silk-playground-state";
 
 export function App() {
   const [editable, setEditable] = useState(true);
-  const stateRef = useRef<string | undefined>(undefined);
+  const editorRef = useRef<SilkEditorHandle>(null);
 
   const [initialState] = useState(() => {
     try {
@@ -15,14 +16,11 @@ export function App() {
     }
   });
 
-  const handleChange = useCallback((json: string) => {
-    stateRef.current = json;
-  }, []);
-
   const handleSave = useCallback(() => {
-    if (stateRef.current) {
+    const json = editorRef.current?.getState();
+    if (json) {
       try {
-        localStorage.setItem(STORAGE_KEY, stateRef.current);
+        localStorage.setItem(STORAGE_KEY, json);
       } catch {
         // storage full
       }
@@ -129,8 +127,8 @@ export function App() {
           }}
         >
           <SilkEditor
+            ref={editorRef}
             editable={editable}
-            onChange={handleChange}
             initialEditorState={initialState}
           />
         </div>
