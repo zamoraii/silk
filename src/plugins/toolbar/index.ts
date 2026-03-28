@@ -1,0 +1,1 @@
+export { SilkToolbarPlugin } from "./toolbar";

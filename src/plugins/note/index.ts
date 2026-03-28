@@ -1,0 +1,1 @@
+export { SilkNotePlugin } from "./note";
