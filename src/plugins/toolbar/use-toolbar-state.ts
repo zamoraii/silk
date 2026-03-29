@@ -3,10 +3,13 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   $getSelection,
   $isRangeSelection,
+  $isNodeSelection,
   FORMAT_TEXT_COMMAND,
+  FORMAT_ELEMENT_COMMAND,
   SELECTION_CHANGE_COMMAND,
   COMMAND_PRIORITY_LOW,
   type TextFormatType,
+  type ElementFormatType,
 } from "lexical";
 import {
   $patchStyleText,
@@ -14,6 +17,7 @@ import {
   $setBlocksType,
 } from "@lexical/selection";
 import { $createQuoteNode } from "@lexical/rich-text";
+import { $isImageNode } from "../../nodes/image";
 import { SHOW_LINK_DIALOG_COMMAND } from "../link";
 import {
   detectFontFamily,
@@ -30,10 +34,23 @@ export function useToolbarState() {
   const [currentFontFamily, setCurrentFontFamily] = useState<string | null>(
     null,
   );
+  const [alignment, setAlignment] = useState<ElementFormatType>("");
 
   const readSelection = useCallback(() => {
     editor.getEditorState().read(() => {
       const selection = $getSelection();
+
+      if ($isNodeSelection(selection)) {
+        const nodes = selection.getNodes();
+        if (nodes.length > 0) {
+          const node = nodes[0];
+          if ($isImageNode(node)) {
+            setAlignment((node.getAlignment() || "") as ElementFormatType);
+          }
+        }
+        return;
+      }
+
       if (!$isRangeSelection(selection)) return;
 
       const active = new Set<TextFormatType>();
@@ -63,6 +80,12 @@ export function useToolbarState() {
         "",
       );
       setCurrentFontFamily(detectFontFamily(fontFamilyStr || null));
+
+      const anchorNode = selection.anchor.getNode();
+      const element = anchorNode.getTopLevelElement();
+      if (element) {
+        setAlignment(element.getFormatType() || "");
+      }
     });
   }, [editor]);
 
@@ -147,16 +170,36 @@ export function useToolbarState() {
     });
   }, [editor]);
 
+  const applyAlignment = useCallback(
+    (format: ElementFormatType) => {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isNodeSelection(selection)) {
+          for (const node of selection.getNodes()) {
+            if ($isImageNode(node)) {
+              node.setAlignment(format);
+            }
+          }
+          return;
+        }
+      });
+      editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, format);
+    },
+    [editor],
+  );
+
   return {
     formats,
     fontSize,
     currentColor,
     currentFontFamily,
+    alignment,
     toggleFormat,
     changeFontSize,
     applyColor,
     applyFontFamily,
     openLinkDialog,
     insertQuote,
+    applyAlignment,
   };
 }

@@ -25,6 +25,7 @@ export type SerializedImageNode = Spread<
     altText: string;
     width?: number;
     height?: number;
+    alignment?: string;
   },
   SerializedLexicalNode
 >;
@@ -204,6 +205,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   __altText: string;
   __width: number | undefined;
   __height: number | undefined;
+  __alignment: string;
 
   static getType(): string {
     return "image";
@@ -215,6 +217,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       node.__altText,
       node.__width,
       node.__height,
+      node.__alignment,
       node.__key,
     );
   }
@@ -224,6 +227,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     altText: string,
     width?: number,
     height?: number,
+    alignment: string = "",
     key?: NodeKey,
   ) {
     super(key);
@@ -231,15 +235,34 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     this.__altText = altText;
     this.__width = width;
     this.__height = height;
+    this.__alignment = alignment;
+  }
+
+  getAlignment(): string {
+    return this.getLatest().__alignment;
+  }
+
+  setAlignment(alignment: string): void {
+    const writable = this.getWritable();
+    writable.__alignment = alignment;
   }
 
   createDOM(): HTMLElement {
     const div = document.createElement("div");
     div.className = "silk-image-wrapper";
+    if (this.__alignment && this.__alignment !== "left") {
+      div.style.textAlign = this.__alignment;
+    }
     return div;
   }
 
-  updateDOM(): false {
+  updateDOM(prevNode: ImageNode, dom: HTMLElement): boolean {
+    if (prevNode.__alignment !== this.__alignment) {
+      dom.style.textAlign =
+        this.__alignment && this.__alignment !== "left"
+          ? this.__alignment
+          : "";
+    }
     return false;
   }
 
@@ -257,6 +280,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       serializedNode.altText,
       serializedNode.width,
       serializedNode.height,
+      serializedNode.alignment,
     );
   }
 
@@ -267,6 +291,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       altText: this.__altText,
       width: this.__width,
       height: this.__height,
+      alignment: this.__alignment || undefined,
     };
   }
 
@@ -316,8 +341,11 @@ export function $createImageNode(
   altText: string = "",
   width?: number,
   height?: number,
+  alignment?: string,
 ): ImageNode {
-  return $applyNodeReplacement(new ImageNode(src, altText, width, height));
+  return $applyNodeReplacement(
+    new ImageNode(src, altText, width, height, alignment),
+  );
 }
 
 export function $isImageNode(

@@ -20,12 +20,14 @@ export function SilkToolbarPlugin() {
     fontSize,
     currentColor,
     currentFontFamily,
+    alignment,
     toggleFormat,
     changeFontSize,
     applyColor,
     applyFontFamily,
     openLinkDialog,
     insertQuote,
+    applyAlignment,
   } = useToolbarState();
 
   useEffect(() => {
@@ -132,6 +134,50 @@ export function SilkToolbarPlugin() {
           <line x1="8" y1="8" x2="21" y2="8" />
           <line x1="8" y1="12" x2="18" y2="12" />
           <line x1="8" y1="16" x2="15" y2="16" />
+        </svg>
+      </button>
+
+      <div className="silk-ft-sep" />
+
+      {/* Alignment */}
+      <button
+        className={`silk-ft-btn${alignment === "" || alignment === "left" ? " silk-ft-btn--active" : ""}`}
+        onClick={() => applyAlignment("left")}
+        type="button"
+        title="Align left"
+      >
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+        >
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="15" y2="12" />
+          <line x1="3" y1="18" x2="18" y2="18" />
+        </svg>
+      </button>
+      <button
+        className={`silk-ft-btn${alignment === "center" ? " silk-ft-btn--active" : ""}`}
+        onClick={() => applyAlignment("center")}
+        type="button"
+        title="Align center"
+      >
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+        >
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="6" y1="12" x2="18" y2="12" />
+          <line x1="5" y1="18" x2="19" y2="18" />
         </svg>
       </button>
 

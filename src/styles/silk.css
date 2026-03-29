@@ -293,6 +293,7 @@
 
 /* ── Horizontal rule ── */
 .silk-hr {
+  height: auto;
   border: none;
   margin: 28px 0;
   padding: 0;
